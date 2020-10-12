@@ -17,9 +17,7 @@ class RegisterPg extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Logo(
-                    title: 'Registro',
-                  ),
+                  Logo(title: 'Registro'),
                   _Form(),
                   Labels(
                       url: 'login',
