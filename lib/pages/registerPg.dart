@@ -1,8 +1,11 @@
+import 'package:chat/helpers/alert.dart';
+import 'package:chat/services/auth.dart';
 import 'package:chat/widgets/btn_azul.dart';
 import 'package:chat/widgets/input.dart';
 import 'package:chat/widgets/labels.dart';
 import 'package:chat/widgets/logo.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RegisterPg extends StatelessWidget {
   @override
@@ -42,6 +45,7 @@ class __FormState extends State<_Form> {
   final txtPwd = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final _auth = Provider.of<SAuth>(context);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -62,12 +66,18 @@ class __FormState extends State<_Form> {
             isPwd: true,
           ),
           BotonAzul(
-              text: 'Ingresar',
-              onPress: () {
-                print(txtNom.text);
-                print(txtCor.text);
-                print(txtPwd.text);
-              })
+              text: 'Crear cuenta',
+              onPress: _auth.autenticando
+                  ? null
+                  : () async {
+                      final ok = await _auth.register(
+                          txtNom.text, txtCor.text, txtPwd.text);
+                      if (ok == true) {
+                        Navigator.pushReplacementNamed(context, 'usuarios');
+                      } else {
+                        showAlert(context, 'Registro incorrecto', ok);
+                      }
+                    })
         ],
       ),
     );

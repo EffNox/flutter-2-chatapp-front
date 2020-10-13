@@ -1,5 +1,7 @@
 import 'package:chat/models/usuario.dart';
+import 'package:chat/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UsuariosPg extends StatefulWidget {
@@ -17,15 +19,21 @@ class _UsuariosPgState extends State<UsuariosPg> {
   ];
   @override
   Widget build(BuildContext context) {
+    final svAuth = Provider.of<SAuth>(context);
+    final u = svAuth.usuario;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mi Nombre', style: TextStyle(color: Colors.black)),
+        title: Text(u.nom, style: TextStyle(color: Colors.black)),
         centerTitle: true,
         elevation: 1,
         backgroundColor: Colors.white,
         leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.grey, size: 35),
-            onPressed: () {}),
+            onPressed: () {
+              // TODO Desconectar del Socket server
+              Navigator.pushReplacementNamed(context, 'login');
+              SAuth.deleteTk();
+            }),
         actions: [
           Container(
             margin: EdgeInsets.only(right: 10),

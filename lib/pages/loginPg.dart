@@ -1,8 +1,11 @@
+import 'package:chat/helpers/alert.dart';
+import 'package:chat/services/auth.dart';
 import 'package:chat/widgets/btn_azul.dart';
 import 'package:chat/widgets/input.dart';
 import 'package:chat/widgets/labels.dart';
 import 'package:chat/widgets/logo.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginPg extends StatelessWidget {
   @override
@@ -43,6 +46,7 @@ class __FormState extends State<_Form> {
   final txtPwd = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final _auth = Provider.of<SAuth>(context);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -62,10 +66,19 @@ class __FormState extends State<_Form> {
           ),
           BotonAzul(
               text: 'Ingresar',
-              onPress: () {
-                print(txtCor.text);
-                print(txtPwd.text);
-              })
+              onPress: _auth.autenticando
+                  ? null
+                  : () async {
+                      FocusScope.of(context).unfocus();
+                      final ok =
+                          await _auth.login(txtCor.text.trim(), txtPwd.text);
+                      if (ok) {
+                        Navigator.pushReplacementNamed(context, 'usuarios');
+                      } else {
+                        showAlert(context, 'Login incorrecto',
+                            'Correo y/o contraseña invalidos');
+                      }
+                    })
         ],
       ),
     );
