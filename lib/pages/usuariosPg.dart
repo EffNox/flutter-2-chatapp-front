@@ -1,5 +1,8 @@
 import 'package:chat/models/usuario.dart';
 import 'package:chat/services/auth.dart';
+import 'package:chat/services/schat.dart';
+import 'package:chat/services/ssocket.dart';
+import 'package:chat/services/susuario.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -11,15 +14,19 @@ class UsuariosPg extends StatefulWidget {
 
 class _UsuariosPgState extends State<UsuariosPg> {
   RefreshController _rfCon = RefreshController(initialRefresh: false);
+  final svUsu = SUsuario();
 
-  final usuarios = [
-    Usuario(id: '1', nom: 'Fernando', cor: 'test@gmail.com', online: true),
-    Usuario(id: '2', nom: 'Ximena', cor: 'test1@gmail.com', online: false),
-    Usuario(id: '3', nom: 'Meliza', cor: 'test2@gmail.com', online: true),
-  ];
+  List<Usuario> usuarios = [];
+  @override
+  void initState() {
+    _cargarUsuarios();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final svAuth = Provider.of<SAuth>(context);
+    final svSocket = Provider.of<SSocket>(context);
     final u = svAuth.usuario;
     return Scaffold(
       appBar: AppBar(
@@ -30,16 +37,16 @@ class _UsuariosPgState extends State<UsuariosPg> {
         leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.grey, size: 35),
             onPressed: () {
-              // TODO Desconectar del Socket server
+              svSocket.disconnect();
               Navigator.pushReplacementNamed(context, 'login');
               SAuth.deleteTk();
             }),
         actions: [
           Container(
             margin: EdgeInsets.only(right: 10),
-            child:
-                // Icon(Icons.cancel, color: Colors.red,size: 45),
-                Icon(Icons.check_circle, color: Colors.blue, size: 45),
+            child: svSocket.svrSt == ServerStatus.Online
+                ? Icon(Icons.check_circle, color: Colors.blue, size: 45)
+                : Icon(Icons.cancel, color: Colors.red, size: 45),
           )
         ],
       ),
@@ -79,11 +86,18 @@ class _UsuariosPgState extends State<UsuariosPg> {
             color: u.online ? Colors.lightGreen : Colors.red,
             borderRadius: BorderRadius.circular(100)),
       ),
+      onTap: () {
+        final svChat = Provider.of<SChat>(context, listen: false);
+        svChat.usuarioTo = u;
+        Navigator.pushNamed(context, 'chat');
+      },
     );
   }
 
   _cargarUsuarios() async {
-    await Future.delayed(Duration(milliseconds: 1000));
+    usuarios = await svUsu.getAll();
+    setState(() {});
+    // await Future.delayed(Duration(milliseconds: 1000));
     _rfCon.refreshCompleted();
   }
 }

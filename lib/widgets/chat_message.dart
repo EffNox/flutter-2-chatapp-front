@@ -1,18 +1,22 @@
+import 'package:chat/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChatMessage extends StatelessWidget {
   final String txt;
   final String id;
   final AnimationController aniCon;
   const ChatMessage(
-      {@required this.txt,
-      @required this.id,
-      @required this.aniCon});
+      {@required this.txt, @required this.id, @required this.aniCon});
   @override
   Widget build(BuildContext context) {
+    final svAuth = Provider.of<SAuth>(context);
     return FadeTransition(
       opacity: aniCon,
-      child: SizeTransition(sizeFactor: CurvedAnimation(parent: aniCon, curve: Curves.easeInOut),child: Container(child: id == '123' ? _myMsg() : _notMyMsg())),
+      child: SizeTransition(
+          sizeFactor: CurvedAnimation(parent: aniCon, curve: Curves.easeInOut),
+          child: Container(
+              child: id == svAuth.usuario.id ? _myMsg() : _notMyMsg())),
     );
   }
 

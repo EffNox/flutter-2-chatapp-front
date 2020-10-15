@@ -1,5 +1,6 @@
 import 'package:chat/helpers/alert.dart';
 import 'package:chat/services/auth.dart';
+import 'package:chat/services/ssocket.dart';
 import 'package:chat/widgets/btn_azul.dart';
 import 'package:chat/widgets/input.dart';
 import 'package:chat/widgets/labels.dart';
@@ -46,6 +47,7 @@ class __FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final _auth = Provider.of<SAuth>(context);
+    final svSocket = Provider.of<SSocket>(context);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -73,6 +75,7 @@ class __FormState extends State<_Form> {
                       final ok = await _auth.register(
                           txtNom.text, txtCor.text, txtPwd.text);
                       if (ok == true) {
+                        svSocket.connect();
                         Navigator.pushReplacementNamed(context, 'usuarios');
                       } else {
                         showAlert(context, 'Registro incorrecto', ok);

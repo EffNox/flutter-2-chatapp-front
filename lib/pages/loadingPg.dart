@@ -1,6 +1,7 @@
 import 'package:chat/pages/loginPg.dart';
 import 'package:chat/pages/usuariosPg.dart';
 import 'package:chat/services/auth.dart';
+import 'package:chat/services/ssocket.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,9 +22,11 @@ class LoadingPg extends StatelessWidget {
 
   Future checkLoginState(BuildContext context) async {
     final svAuth = Provider.of<SAuth>(context, listen: false);
+    final svSocket = Provider.of<SSocket>(context, listen: false);
     final autenticado = await svAuth.isLoggedIn();
     if (autenticado) {
       // Navigator.popAndPushNamed(context, 'usuarios');
+      svSocket.connect();
       Navigator.pushReplacement(
           context, PageRouteBuilder(pageBuilder: (_, __, ___) => UsuariosPg(),transitionDuration: Duration(milliseconds: 0)));
     } else {
